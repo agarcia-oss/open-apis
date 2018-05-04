@@ -1,0 +1,141 @@
+localHostName: AOTLXPRMIC00001
+eurekaHostNameN1: AOTLXPRMIC00001
+eurekaHostNameN2: AOTLXPRMIC00002
+eurekaHostNameN3: AOTLXPRMIC00003
+eurekaHostNameN4: AOTLXPRMIC00004
+eurekaHostNameN5: AOTLXPRMIC00005
+eurekaHostNameN6: AOTLXPRMIC00006
+validator:
+  enable: false
+orange:
+  log:
+    zfields: # Parámetros Z que se leen de la cabecera
+      - "z-tid"
+      - "z-login"
+      - "z-rol"
+      - "z-login-type"
+      - "z-document"
+      - "z-document-type"
+      - "z-line-selected"
+      - "z-sfid"
+      - "z-caller-ip"
+      - "z-caller-port"
+      - "z-process"
+      - "z-app"
+      - "z-brand"
+    zorder: "z-tid|z-login|z-rol|z-login-type|z-document|z-document-type|z-line-selected|z-sfid|z-caller-ip|z-caller-port|z-process|z-app|z-brand" #Orden de los parámetros Z
+info:
+  build:
+    artifactId: ${project.artifactId}
+    name: ${project.name}
+    version: ${project.version}
+    description: ${project.description}
+spring:
+  application:
+    name: ${project.name}
+  boot:
+    admin:
+      url: https://${localHostName}:9006
+server:
+  ssl:
+    enabled: true
+    key-store: /servicios/springboot/comun-config/certmicroservicespro.jks
+    key-password: test
+    key-store-password: test
+    key-alias: ${localHostName}
+    trust-store: /servicios/springboot/comun-config/certmicroservicespro.jks
+    trust-store-password: test
+    key-store-type: jks
+  use-forward-headers: true
+  tomcat:
+    access-log-enabled: true
+    access-log-directory: /logs_ms/
+    access-log-prefix: access-log-${spring.application.name}-${server.port}
+    #access-log-pattern: "[%{dd/MM/YYYY:HH:mm:ss.SSS}t]|%u|%U|%q|%{cookie}c|%{Z-TID}i|%s|%D|%{Referer}i|%b"
+    access-log-pattern: "[%{dd/MM/YYYY:HH:mm:ss.SSS}t]|%u|%U|%q|%{cookie}c|%{Z-TID}i|%{Z-LOGIN}i|%{Z-ROL}i|%{Z-LOGIN-TYPE}i|%{Z-DOCUMENT}i|%{Z-DOCUMENT-TYPE}i|%{Z-LINE-SELECTED}i|%{Z-SFID}i|%{Z-CALLER-IP}i|%{Z-CALLER-PORT}i|%{Z-PROCESS}i|%{Z-APP}i|%{Z-BRAND}i|%s|%D|%{Referer}i|%b"
+endpoints:
+  jolokia:
+    path: /jolokia/
+    enabled: true
+  autoconfig:
+    sensitive: true
+    enabled: true
+  beans:
+    enabled: true
+    sensitive: true
+    id: springbeans
+  sensitive: true
+  restart:
+    enabled: true
+  refresh:
+    enabled: true
+  shutdown:
+    enabled: true
+  metrics:
+    enabled: true
+  enabled: true
+  actuator:
+    enabled: true
+    sensitive: true
+eureka:
+  server:
+    a-sgupdate-interval-ms: 1000
+    wait-time-in-ms-when-sync-empty: 0
+    renewal-threshold-update-interval-ms: 5000
+    sync-when-timestamp-differs: true
+  client:
+    enabled: true
+    healthcheck:
+      enabled: true
+    use-dns-for-fetching-service-urls: false
+    availability-zones:
+      eurekaN1: 'eurekaN1'
+#      eurekaN2: 'eurekaN2'
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      'eurekaN1': http://${eurekaHostNameN1}:9002/eureka/,http://${eurekaHostNameN2}:9002/eureka/,http://${eurekaHostNameN3}:9002/eureka/,http://${eurekaHostNameN4}:9002/eureka/,http://${eurekaHostNameN5}:9002/eureka/,http://${eurekaHostNameN6}:9002/eureka/
+#      'eurekaN2': 'http://${eurekaHostNameN2}:9002/eureka/'
+#      defaultZone: http://${eurekaHostNameN1}:9002/eureka/
+      defaultZone: http://${eurekaHostNameN1}:9002/eureka/,http://${eurekaHostNameN2}:9002/eureka/,http://${eurekaHostNameN3}:9002/eureka/,http://${eurekaHostNameN4}:9002/eureka/,http://${eurekaHostNameN5}:9002/eureka/,http://${eurekaHostNameN6}:9002/eureka/
+    initial-instance-info-replication-interval-seconds: 5
+    instance-info-replication-interval-seconds: 5
+  instance:
+    instanceId: ${localHostName}:${spring.application.name}:${server.port}
+    hostName: ${localHostName}
+    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 5
+    metadata-map: 
+      instanceId: ${spring.application.name}:${server.port}
+      version: ${project.version}
+      spring-application-name: ${spring.application.instance_id:${random.value}}
+    app-group-name: microservicios
+    #home-page-url: http://${server.address}:${server.port}/${server.contextPath}/products
+    appname: ${spring.application.name}
+    secure-port-enabled: true
+    secure-port: ${server.port}
+    home-page-url: https://${localHostName}:${server.port}/
+    secure-virtual-host-name: ${spring.application.name}
+    non-secure-port-enabled: false
+    health-check-url: https://${localHostName}:${server.port}/health
+    status-page-url: https://${localHostName}:${server.port}/info
+logging:
+  path: /logs_ms
+  config: /servicios/springboot/comun-config/logback.xml
+  file: logging-${spring.application.name}-${server.port}
+  level:
+    ROOT: INFO
+    org:
+      springframework:
+        web: INFO
+      hibernate: INFO
+health:
+  hystrix:
+    enabled: true        
+ribbon:
+  IsSecure: true
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 75000
+localZuulURL: https://zuul.si.orange.es:9061
+tibco:
+  tibcoConnectionURL: ${localZuulURL}
+

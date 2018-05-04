@@ -1,0 +1,74 @@
+#Información de la versión y del artefacto
+#localHostName: AOTLXPRMIC00001
+#Habrá tantas variables Hostname como zonas en las que se replique eureka
+#eurekaHostNameN1: AOTLXPRMIC00001
+#eurekaHostNameN2: AOTLXPRMIC00002
+#eurekaHostNameN3: AOTLXPRMIC00003
+#eurekaHostNameN4: AOTLXPRMIC00004
+project:
+  artifactId: @project.artifactId@
+  name: @project.name@
+  version: @project.version@
+  description: @project.description@
+info:
+  build:
+    artifactId: ${project.artifactId}
+    name: ${project.name}
+    version: ${project.version}
+    description: ${project.description}
+#Puerto donde se levanta eureka
+server:
+  port: 9002
+spring:
+  application:
+     name: ${project.name}
+ 
+endpoints:
+  actuator:
+    enabled: true
+  restart:
+    enabled: true
+   
+eureka:
+  instance:
+    instanceId: ${localHostName}:${spring.application.name}:${server.port}
+    hostName: ${localHostName}
+    metadataMap: 
+      version: ${spring.serviceVersion}
+    leaseRenewalIntervalInSeconds: 5
+    lease-expiration-duration-in-seconds: 5
+  client:
+    use-dns-for-fetching-service-urls: false
+#Zona en la que se va  replicar toda su información
+#    region: eurekaN2
+  
+#Zonas disponibles
+#    availability-zones:
+#      eurekaN1: 'eurekaN1'
+#      eurekaN2: 'eurekaN2'
+    registerWithEureka: true
+    fetchRegistry: true
+  
+#URLs de la zonas
+    #serviceUrl:
+     # 'eurekaN1': http://${eurekaHostNameN1}:9002/eureka/,http://${eurekaHostNameN2}:9002/eureka/,http://${eurekaHostNameN3}:9002/eureka/,http://${eurekaHostNameN4}:9002/eureka/
+#      'eurekaN2': 'http://${eurekaHostNameN2}:9002/eureka/'
+#      defaultZone: http://${eurekaHostNameN2}:9002/eureka/
+      #defaultZone: http://${eurekaHostNameN1}:9002/eureka/,http://${eurekaHostNameN2}:9002/eureka/,http://${eurekaHostNameN3}:9002/eureka/,http://${eurekaHostNameN4}:9002/eureka/
+  server:
+    enable-self-preservation: true
+    wait-time-in-ms-when-sync-empty: 0
+logging:
+  
+#Situación de los logs
+  path: ${filesystemlog}/${project.name}
+  
+#Situación del archivo de logback para la configuración de la consola de administración
+  config: ${filesystemdeploy}/${project.name}/logback.xml
+  file: ${logging.path}/logging-${info.build.name}.log
+  level:
+    ROOT: INFO
+    org:
+      springframework:
+        web: INFO
+      hibernate: INFO
